@@ -6,23 +6,32 @@ using UnityEngine.SceneManagement;
 
 public class DeathMenuManager : MonoBehaviour {
 
-    public TextMeshProUGUI currentScore;
-    public TextMeshProUGUI highScore;
+    public TextMeshProUGUI currentScoreText;
+    public TextMeshProUGUI highScoreText;
 
 	// Use this for initialization
 	void Start () {
+
         if (!PlayerPrefs.HasKey("HighScore"))
         {
             PlayerPrefs.SetInt("HighScore", 0);
         }
 
-        if(PlayerPrefs.GetInt("Score") > PlayerPrefs.GetInt("HighScore"))
+        if (!PlayerPrefs.HasKey("Score"))
+        {
+            PlayerPrefs.SetInt("Score", 0);
+        }
+
+        int currentScore = PlayerPrefs.GetInt("Score");
+        int highScore = PlayerPrefs.GetInt("HighScore");
+
+        if (currentScore > highScore)
         {
             PlayerPrefs.SetInt("HighScore", PlayerPrefs.GetInt("Score"));
         }
 
-        currentScore.SetText("Score: " + PlayerPrefs.GetInt("Score"));
-        highScore.SetText("High score: " + PlayerPrefs.GetInt("HighScore"));
+        currentScoreText.SetText("Score: " + PlayerPrefs.GetInt("Score"));
+        highScoreText.SetText("High score: " + PlayerPrefs.GetInt("HighScore"));
     }
 	
 	// Update is called once per frame

@@ -7,7 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class GenerationEngine : MonoBehaviour {
 
-    public GameObject Orb;
+    public GameObject ScoreOrb;
+    public GameObject DeathOrb;
     public float spawnRate = 1;
     public Slider explosionSlider;
     public float decreaseTimeRate = 0.5f;
@@ -15,11 +16,13 @@ public class GenerationEngine : MonoBehaviour {
     public TextMeshProUGUI scoreText;
 
     private int score = 0;
+    private List<GameObject> deathOrbs;
     
 	// Use this for initialization
 	void Start ()
     {
-        SpawnOrb();
+        deathOrbs = new List<GameObject>();
+        SpawnOrbs();
         StartCoroutine(DecreaseSliderValue());
     }
 	
@@ -28,21 +31,23 @@ public class GenerationEngine : MonoBehaviour {
     {
         if(explosionSlider.value <= 0)
         {
-            //explosion stuff
-            PlayerPrefs.SetInt("Score", score);
-            SceneManager.LoadScene("DeathScene");
+            Death();
         }
 	}
 
-    public void SpawnOrb()
+    public void SpawnOrbs()
     {
+        ClearDeathOrbs();
         explosionSlider.value += 0.5f;
 
-        float x = Random.Range(-2.5f, 2.5f);
-        float y = Random.Range(-4f, 4f);
+        float scoreX = Random.Range(-2.5f, 2.5f);
+        float scoreY = Random.Range(-4f, 4f);
 
-        Instantiate(Orb, new Vector3(x, y, 0), Orb.transform.rotation);
-       
+        float deathX = Random.Range(-2.5f, 2.5f);
+        float deathY = Random.Range(-4f, 4f);
+
+        Instantiate(ScoreOrb, new Vector3(scoreX, scoreY, 0), ScoreOrb.transform.rotation);
+        deathOrbs.Add(Instantiate(DeathOrb, new Vector3(deathX, deathY, 0), DeathOrb.transform.rotation));
     }
 
     IEnumerator DecreaseSliderValue()
@@ -58,6 +63,20 @@ public class GenerationEngine : MonoBehaviour {
     {
         score += 10;
         scoreText.SetText("Score : "+ score);
+    }
+
+    public void Death()
+    {
+        PlayerPrefs.SetInt("Score", score);
+        SceneManager.LoadScene("DeathScene");
+    }
+
+    public void ClearDeathOrbs()
+    {
+        foreach(GameObject item in deathOrbs)
+        {
+            Destroy(item);
+        }
     }
 
 }

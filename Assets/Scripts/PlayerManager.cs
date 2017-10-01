@@ -17,36 +17,7 @@ public class PlayerManager : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-
-        MoveToTouchPos(touchPosition);
-
-        if(gameObject.transform.position.x > 2.5f)
-        {
-            gameObject.transform.position = new Vector3(2.5f,transform.position.y,transform.position.z);
-        }
-        if (gameObject.transform.position.x < -2.5f)
-        {
-            gameObject.transform.position = new Vector3(-2.5f, transform.position.y, transform.position.z);
-        }
-        if (gameObject.transform.position.y > 4f)
-        {
-            gameObject.transform.position = new Vector3(transform.position.x , 4f, transform.position.z);
-        }
-        if(gameObject.transform.position.y < -4f)
-        {
-            gameObject.transform.position = new Vector3(transform.position.x, -4f, transform.position.z);
-        }
-
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-
-            if (touch.phase == TouchPhase.Began)
-            {
-                touchPosition = Camera.main.ScreenToWorldPoint(
-                    new Vector3(touch.position.x, touch.position.y,10));  
-            }
-        }
+        Movement();
 	}
 
     private void MoveToTouchPos(Vector3 touchPosition)
@@ -56,11 +27,52 @@ public class PlayerManager : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Orb"))
+        if (collision.CompareTag("ScoreOrb"))
         {
             Destroy(collision.gameObject);
-            ge.SpawnOrb();
+            ge.SpawnOrbs();
             ge.PlusScore();
+        }
+        if (collision.CompareTag("DeathOrb"))
+        {
+            Destroy(gameObject);
+            ge.Death();
+        }
+    }
+
+    private void Movement()
+    {
+        MoveToTouchPos(touchPosition);
+        ValidatePosition();
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                touchPosition = Camera.main.ScreenToWorldPoint(
+                    new Vector3(touch.position.x, touch.position.y, 10));
+            }
+        }
+    }
+
+    private void ValidatePosition()
+    {
+        if (gameObject.transform.position.x > 2.5f)
+        {
+            gameObject.transform.position = new Vector3(2.5f, transform.position.y, transform.position.z);
+        }
+        if (gameObject.transform.position.x < -2.5f)
+        {
+            gameObject.transform.position = new Vector3(-2.5f, transform.position.y, transform.position.z);
+        }
+        if (gameObject.transform.position.y > 4f)
+        {
+            gameObject.transform.position = new Vector3(transform.position.x, 4f, transform.position.z);
+        }
+        if (gameObject.transform.position.y < -4f)
+        {
+            gameObject.transform.position = new Vector3(transform.position.x, -4f, transform.position.z);
         }
     }
 }
