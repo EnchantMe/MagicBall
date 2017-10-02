@@ -6,6 +6,7 @@ TagManager:
   tags:
   - DeathOrb
   - ScoreOrb
+  - BonusOrb
   layers:
   - Default
   - TransparentFX
@@ -42,4 +43,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: PlayObjects
+    uniqueID: 1111381515
     locked: 0

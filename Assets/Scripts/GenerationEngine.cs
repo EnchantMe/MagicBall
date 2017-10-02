@@ -9,6 +9,7 @@ public class GenerationEngine : MonoBehaviour {
 
     public GameObject ScoreOrb;
     public GameObject DeathOrb;
+    public GameObject BonusOrb;
     public float spawnRate = 1;
     public Slider explosionSlider;
     public float decreaseTimeRate = 0.5f;
@@ -16,12 +17,14 @@ public class GenerationEngine : MonoBehaviour {
     public TextMeshProUGUI scoreText;
 
     private int score = 0;
+    private List<GameObject> bonusOrbs;
     private List<GameObject> deathOrbs;
     
 	// Use this for initialization
 	void Start ()
     {
         deathOrbs = new List<GameObject>();
+        bonusOrbs = new List<GameObject>();
         SpawnOrbs();
         StartCoroutine(DecreaseSliderValue());
     }
@@ -37,7 +40,7 @@ public class GenerationEngine : MonoBehaviour {
 
     public void SpawnOrbs()
     {
-        ClearDeathOrbs();
+        ClearOrbs();
         explosionSlider.value += 0.5f;
 
         float scoreX = Random.Range(-2.5f, 2.5f);
@@ -46,7 +49,11 @@ public class GenerationEngine : MonoBehaviour {
         float deathX = Random.Range(-2.5f, 2.5f);
         float deathY = Random.Range(-4f, 4f);
 
+        float bonusX = Random.Range(-2.5f, 2.5f);
+        float bonusY = Random.Range(-4f, 4f);
+
         Instantiate(ScoreOrb, new Vector3(scoreX, scoreY, 0), ScoreOrb.transform.rotation);
+        bonusOrbs.Add(Instantiate(BonusOrb, new Vector3(bonusX, bonusY, 0), BonusOrb.transform.rotation));
         deathOrbs.Add(Instantiate(DeathOrb, new Vector3(deathX, deathY, 0), DeathOrb.transform.rotation));
     }
 
@@ -59,9 +66,9 @@ public class GenerationEngine : MonoBehaviour {
         }
     }
 
-    public void PlusScore()
+    public void PlusScore(int sc)
     {
-        score += 10;
+        score += sc;
         scoreText.SetText("Score : "+ score);
     }
 
@@ -71,9 +78,14 @@ public class GenerationEngine : MonoBehaviour {
         SceneManager.LoadScene("DeathScene");
     }
 
-    public void ClearDeathOrbs()
+    public void ClearOrbs()
     {
         foreach(GameObject item in deathOrbs)
+        {
+            Destroy(item);
+        }
+
+        foreach(GameObject item in bonusOrbs)
         {
             Destroy(item);
         }

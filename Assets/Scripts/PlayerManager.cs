@@ -31,13 +31,20 @@ public class PlayerManager : MonoBehaviour {
         {
             Destroy(collision.gameObject);
             ge.SpawnOrbs();
-            ge.PlusScore();
+            ge.PlusScore(10);
         }
         if (collision.CompareTag("DeathOrb"))
         {
             Destroy(gameObject);
             ge.Death();
         }
+
+        if (collision.CompareTag("BonusOrb"))
+        {
+            DestroyObject(collision.gameObject);
+            ge.PlusScore(50);
+        }
+
     }
 
     private void Movement()
