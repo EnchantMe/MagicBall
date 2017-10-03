@@ -88,8 +88,10 @@
     <Compile Include="Assets\Scripts\GenerationEngine.cs" />
     <Compile Include="Assets\Scripts\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\OrbOfScore.cs" />
+    <Compile Include="Assets\Scripts\PauseMenuManager.cs" />
     <Compile Include="Assets\Scripts\PlayerManager.cs" />
     <Compile Include="Assets\Scripts\PlaySceneManager.cs" />
+    <Compile Include="Assets\Scripts\ScrollBackground.cs" />
     <Compile Include="Assets\Scripts\Wall.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples\Scripts\Benchmark01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples\Scripts\Benchmark01_UGUI.cs" />

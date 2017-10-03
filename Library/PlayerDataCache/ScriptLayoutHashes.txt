@@ -207,3 +207,4 @@ bf20230e9e1735ec8283702307d7db66 Assembly-CSharp.dll:.PlayerManager
 af7666733efcc974926d7d470e1732a6 Assembly-CSharp.dll:TMPro.Examples.SkewTextExample
 34e025057ef78b1bf238460cdf6583a3 Assembly-CSharp.dll:TMPro.Examples.ObjectSpin
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:TMPro.Examples.SimpleScript
+bd493c9b5e9e68f811c6f5ea21ded59e Assembly-CSharp.dll:.PauseMenuManager
