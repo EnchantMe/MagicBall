@@ -16,6 +16,7 @@ public class GenerationEngine : MonoBehaviour {
     public float decreaseValueRate = 0.1f;
     public TextMeshProUGUI scoreText;
 
+    private int deathOrbSpawnRate = 1;
     private int score = 0;
     private List<GameObject> bonusOrbs;
     private List<GameObject> deathOrbs;
@@ -40,21 +41,34 @@ public class GenerationEngine : MonoBehaviour {
 
     public void SpawnOrbs()
     {
+        if (score >= 500)
+        {
+            deathOrbSpawnRate = 2;
+        }
+        if (score >= 1500)
+        {
+            deathOrbSpawnRate = 3;
+        }
+
         ClearOrbs();
         explosionSlider.value += 0.5f;
 
         float scoreX = Random.Range(-2.5f, 2.5f);
         float scoreY = Random.Range(-4f, 4f);
 
-        float deathX = Random.Range(-2.5f, 2.5f);
-        float deathY = Random.Range(-4f, 4f);
-
         float bonusX = Random.Range(-2.5f, 2.5f);
         float bonusY = Random.Range(-4f, 4f);
 
         Instantiate(ScoreOrb, new Vector3(scoreX, scoreY, 0), ScoreOrb.transform.rotation);
         bonusOrbs.Add(Instantiate(BonusOrb, new Vector3(bonusX, bonusY, 0), BonusOrb.transform.rotation));
-        deathOrbs.Add(Instantiate(DeathOrb, new Vector3(deathX, deathY, 0), DeathOrb.transform.rotation));
+        for(int i = 0; i < deathOrbSpawnRate; ++i)
+        {
+
+            float deathX = Random.Range(-2.5f, 2.5f);
+            float deathY = Random.Range(-4f, 4f);   
+
+            deathOrbs.Add(Instantiate(DeathOrb, new Vector3(deathX, deathY, 0), DeathOrb.transform.rotation));
+        }
     }
 
     IEnumerator DecreaseSliderValue()
