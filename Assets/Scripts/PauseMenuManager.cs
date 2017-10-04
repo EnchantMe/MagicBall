@@ -7,6 +7,8 @@ public class PauseMenuManager : MonoBehaviour {
 
     public Canvas mainCanvas;
 
+    private bool isPaused = false;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -14,8 +16,18 @@ public class PauseMenuManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!isPaused)
+            {
+                Event_Pause();
+            }
+            else
+            {
+                Event_Resume();
+            }
+        }
+    }
 
     public void Event_Pause()
     {

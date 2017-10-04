@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class GenerationEngine : MonoBehaviour {
 
+    public GameObject PlayerOrb;
     public GameObject ScoreOrb;
     public GameObject DeathOrb;
     public GameObject BonusOrb;
@@ -20,6 +21,9 @@ public class GenerationEngine : MonoBehaviour {
     private int score = 0;
     private List<GameObject> bonusOrbs;
     private List<GameObject> deathOrbs;
+
+    private float borderX = 2.5f;
+    private float borderY = 4f;
     
 	// Use this for initialization
 	void Start ()
@@ -53,21 +57,179 @@ public class GenerationEngine : MonoBehaviour {
         ClearOrbs();
         explosionSlider.value += 0.5f;
 
-        float scoreX = Random.Range(-2.5f, 2.5f);
-        float scoreY = Random.Range(-4f, 4f);
-
-        float bonusX = Random.Range(-2.5f, 2.5f);
-        float bonusY = Random.Range(-4f, 4f);
-
-        Instantiate(ScoreOrb, new Vector3(scoreX, scoreY, 0), ScoreOrb.transform.rotation);
-        bonusOrbs.Add(Instantiate(BonusOrb, new Vector3(bonusX, bonusY, 0), BonusOrb.transform.rotation));
+        deathOrbs.Clear();
         for(int i = 0; i < deathOrbSpawnRate; ++i)
         {
 
-            float deathX = Random.Range(-2.5f, 2.5f);
-            float deathY = Random.Range(-4f, 4f);   
-
+            float deathX = Random.Range(-borderX, borderX);
+            float deathY = Random.Range(-borderY, borderY);
+            ValidateDeathOrbPosition(ref deathX, ref deathY);
             deathOrbs.Add(Instantiate(DeathOrb, new Vector3(deathX, deathY, 0), DeathOrb.transform.rotation));
+        }
+
+        float scoreX = Random.Range(-borderX, borderX);
+        float scoreY = Random.Range(-borderY, borderY);
+        ValidateScoreOrbPosition(ref scoreX, ref scoreY);
+
+        float bonusX = Random.Range(-borderX, borderX);
+        float bonusY = Random.Range(-borderY, borderY);
+
+        Instantiate(ScoreOrb, new Vector3(scoreX, scoreY, 0), ScoreOrb.transform.rotation);
+        bonusOrbs.Add(Instantiate(BonusOrb, new Vector3(bonusX, bonusY, 0), BonusOrb.transform.rotation));
+
+    }
+
+    private void ValidateScoreOrbPosition(ref float x, ref float y)
+    {
+        foreach(GameObject item in deathOrbs)
+        {
+            if (x > 0 && y > 0)
+            {
+                if (System.Math.Abs(item.transform.position.x - x) < 0.8f)
+                {
+                    x -= Random.Range(0.3f, 1f);
+                }
+                if (System.Math.Abs(PlayerOrb.transform.position.y - y) < 1f)
+                {
+                    y -= Random.Range(1.5f, 3f);
+                }
+            }
+            else if (x < 0 && y < 0)
+            {
+                if (System.Math.Abs(item.transform.position.x - x) < 0.8f)
+                {
+                    x += Random.Range(0.3f, 1f);
+                }
+                if (System.Math.Abs(item.transform.position.y - y) < 1f)
+                {
+                    y += Random.Range(1.5f, 3f);
+                }
+            }
+            else if (x < 0 && y > 0)
+            {
+                if (System.Math.Abs(item.transform.position.x - x) < 0.8f)
+                {
+                    x += Random.Range(0.3f, 1f);
+                }
+                if (System.Math.Abs(item.transform.position.y - y) < 1f)
+                {
+                    y -= Random.Range(1.5f, 3f);
+                }
+            }
+            else if (x > 0 && y < 0)
+            {
+                if (System.Math.Abs(item.transform.position.x - x) < 0.8f)
+                {
+                    x -= Random.Range(0.3f, 1f);
+                }
+                if (System.Math.Abs(item.transform.position.y - y) < 1f)
+                {
+                    y += Random.Range(1.5f, 3f);
+                }
+            }
+        }
+    }
+
+    private void ValidateBonusOrbPosition(ref float x, ref float y)
+    {
+        foreach (GameObject item in deathOrbs)
+        {
+            if (x > 0 && y > 0)
+            {
+                if (System.Math.Abs(item.transform.position.x - x) < 0.8f)
+                {
+                    x -= Random.Range(0.3f, 1f);
+                }
+                if (System.Math.Abs(PlayerOrb.transform.position.y - y) < 1f)
+                {
+                    y -= Random.Range(1.5f, 3f);
+                }
+                break;
+            }
+            else if (x < 0 && y < 0)
+            {
+                if (System.Math.Abs(item.transform.position.x - x) < 0.8f)
+                {
+                    x += Random.Range(0.3f, 1f);
+                }
+                if (System.Math.Abs(item.transform.position.y - y) < 1f)
+                {
+                    y += Random.Range(1.5f, 3f);
+                }
+                break;
+            }
+            else if (x < 0 && y > 0)
+            {
+                if (System.Math.Abs(item.transform.position.x - x) < 0.8f)
+                {
+                    x += Random.Range(0.3f, 1f);
+                }
+                if (System.Math.Abs(item.transform.position.y - y) < 1f)
+                {
+                    y -= Random.Range(1.5f, 3f);
+                }
+                break;
+            }
+            else if (x > 0 && y < 0)
+            {
+                if (System.Math.Abs(item.transform.position.x - x) < 0.8f)
+                {
+                    x -= Random.Range(0.3f, 1f);
+                }
+                if (System.Math.Abs(item.transform.position.y - y) < 1f)
+                {
+                    y += Random.Range(1.5f, 3f);
+                }
+                break;
+            }
+        }
+    }
+
+    private void ValidateDeathOrbPosition(ref float x, ref float y)
+    {
+        if(x >0 && y > 0)
+        {
+            if(System.Math.Abs(PlayerOrb.transform.position.x - x) < 0.8f)
+            {
+                x -= Random.Range(0.3f, 1f);
+            }
+            if(System.Math.Abs(PlayerOrb.transform.position.y - y) < 1f)
+            {
+                y -= Random.Range(1.5f, 3f);
+            }
+        }
+        else if(x < 0 && y < 0)
+        {
+            if (System.Math.Abs(PlayerOrb.transform.position.x - x) < 0.8f)
+            {
+                x += Random.Range(0.3f, 1f);
+            }
+            if (System.Math.Abs(PlayerOrb.transform.position.y - y) < 1f)
+            {
+                y += Random.Range(1.5f, 3f);
+            }
+        }
+        else if (x < 0 && y > 0)
+        {
+            if (System.Math.Abs(PlayerOrb.transform.position.x - x) < 0.8f)
+            {
+                x += Random.Range(0.3f, 1f);
+            }
+            if (System.Math.Abs(PlayerOrb.transform.position.y - y) < 1f)
+            {
+                y -= Random.Range(1.5f, 3f);
+            }
+        }
+        else if (x > 0 && y < 0)
+        {
+            if (System.Math.Abs(PlayerOrb.transform.position.x - x) < 0.8f)
+            {
+                x -= Random.Range(0.3f, 1f);
+            }
+            if (System.Math.Abs(PlayerOrb.transform.position.y - y) < 1f)
+            {
+                y += Random.Range(1.5f, 3f);
+            }
         }
     }
 
