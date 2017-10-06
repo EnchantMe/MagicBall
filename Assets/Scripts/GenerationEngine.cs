@@ -19,11 +19,16 @@ public class GenerationEngine : MonoBehaviour {
 
     private int deathOrbSpawnRate = 1;
     private int score = 0;
+    private int capScore = 500;
+    private bool firstCap = false;
+    private bool stopSpawn = false;
     private List<GameObject> bonusOrbs;
     private List<GameObject> deathOrbs;
 
-    private float borderX = 2.5f;
-    private float borderY = 4f;
+    [HideInInspector]
+    public static float borderX = 2.5f;
+    [HideInInspector]
+    public static float borderY = 4f;
     
 	// Use this for initialization
 	void Start ()
@@ -45,16 +50,9 @@ public class GenerationEngine : MonoBehaviour {
 
     public void SpawnOrbs()
     {
-        if (score >= 500)
-        {
-            deathOrbSpawnRate = 2;
-        }
-        if (score >= 1500)
-        {
-            deathOrbSpawnRate = 3;
-        }
-
+       
         ClearOrbs();
+        ValidateSpawnRateOfDeathOrbs();
         explosionSlider.value += 0.5f;
 
         deathOrbs.Clear();
@@ -77,6 +75,28 @@ public class GenerationEngine : MonoBehaviour {
         Instantiate(ScoreOrb, new Vector3(scoreX, scoreY, 0), ScoreOrb.transform.rotation);
         bonusOrbs.Add(Instantiate(BonusOrb, new Vector3(bonusX, bonusY, 0), BonusOrb.transform.rotation));
 
+    }
+    
+    private void ValidateSpawnRateOfDeathOrbs()
+    {
+        if (!stopSpawn)
+        {
+            if (score >= capScore && !firstCap)
+            {
+                ++deathOrbSpawnRate;
+                capScore += 500;
+                firstCap = true;
+            }
+            else if (score >= capScore)
+            {
+                ++deathOrbSpawnRate;
+                capScore += 1000;
+            }
+            if (deathOrbSpawnRate == 4)
+            {
+                stopSpawn = true;
+            }
+        }
     }
 
     private void ValidateScoreOrbPosition(ref float x, ref float y)

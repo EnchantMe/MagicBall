@@ -10,13 +10,24 @@ public class PlayerManager : MonoBehaviour {
 
     public float speed = 5;
 
+    private Animator anim;
+
 	// Use this for initialization
 	void Start () {
         touchPosition = gameObject.transform.position;
+        anim = gameObject.GetComponent<Animator>();
 	}
 
     // Update is called once per frame
     void Update() {
+        if(transform.position.x < 0)
+        {
+            anim.SetBool("flip", true);
+        }
+        else if (transform.position.x >= 0)
+        {
+            anim.SetBool("flip", false);
+        }
         Movement();
 	}
 
