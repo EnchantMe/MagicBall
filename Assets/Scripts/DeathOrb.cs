@@ -50,4 +50,9 @@ public class DeathOrb : MonoBehaviour {
         }
 
     }
+
+    public void AttackAnimation()
+    {
+        anim.SetBool("attack", true);
+    }
 }

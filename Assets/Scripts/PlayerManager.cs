@@ -40,20 +40,28 @@ public class PlayerManager : MonoBehaviour {
     {
         if (collision.CompareTag("ScoreOrb"))
         {
+            anim.SetBool("eat", true);
+            collision.gameObject.SendMessage("DeathAnimation");
             Destroy(collision.gameObject);
             ge.SpawnOrbs();
-            ge.PlusScore(10);
+            ge.PlusScore(25);
+            anim.SetBool("eat", false);
         }
         if (collision.CompareTag("DeathOrb"))
         {
+            anim.SetBool("death", true);
+            collision.gameObject.SendMessage("AttackAnimation");
             Destroy(gameObject);
+            anim.SetBool("death", false);
             ge.Death();
         }
 
         if (collision.CompareTag("BonusOrb"))
         {
+            anim.SetBool("eat", true);
             DestroyObject(collision.gameObject);
             ge.PlusScore(50);
+            anim.SetBool("eat", false);
         }
 
     }
