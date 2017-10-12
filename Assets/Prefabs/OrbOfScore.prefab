@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 50342340536774412}
   - component: {fileID: 58876967951432454}
   - component: {fileID: 95968097229516996}
+  - component: {fileID: 114451413448866772}
   m_Layer: 0
   m_Name: OrbOfScore
   m_TagString: ScoreOrb
@@ -95,6 +96,17 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114451413448866772
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1026007416813118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b3e15bea5e0cd5448a346deb1aebc38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &212646813765843574
 SpriteRenderer:
   m_ObjectHideFlags: 1

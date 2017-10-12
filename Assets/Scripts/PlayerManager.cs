@@ -49,11 +49,7 @@ public class PlayerManager : MonoBehaviour {
         }
         if (collision.CompareTag("DeathOrb"))
         {
-            anim.SetBool("death", true);
-            collision.gameObject.SendMessage("AttackAnimation");
-            Destroy(gameObject);
-            anim.SetBool("death", false);
-            ge.Death();
+            StartCoroutine(Death(collision));
         }
 
         if (collision.CompareTag("BonusOrb"))
@@ -61,9 +57,18 @@ public class PlayerManager : MonoBehaviour {
             anim.SetBool("eat", true);
             DestroyObject(collision.gameObject);
             ge.PlusScore(50);
-            anim.SetBool("eat", false);
         }
 
+    }
+
+    IEnumerator Death(Collider2D collision)
+    {
+        anim.SetBool("death", true);
+        collision.gameObject.SendMessage("AttackAnimation");
+        yield return new WaitForSeconds(1f);
+        Destroy(gameObject);
+        ge.Death();
+        StopCoroutine("Death");
     }
 
     private void Movement()
@@ -100,5 +105,10 @@ public class PlayerManager : MonoBehaviour {
         {
             gameObject.transform.position = new Vector3(transform.position.x, -4f, transform.position.z);
         }
+    }
+
+    private void Event_EatEnd()
+    {
+        anim.SetBool("eat", false);
     }
 }
