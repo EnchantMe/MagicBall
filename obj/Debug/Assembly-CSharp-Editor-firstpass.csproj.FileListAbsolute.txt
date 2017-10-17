@@ -1,0 +1,2 @@
+/home/blackrock/Projects/Unity3d/MagicBall/obj/Debug/Assembly-CSharp-Editor-firstpass.csprojResolveAssemblyReference.cache
+/home/blackrock/Projects/Unity3d/MagicBall/obj/Debug/Assembly-CSharp-Editor-firstpass.csproj.CoreCompileInputs.cache

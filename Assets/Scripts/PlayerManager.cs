@@ -7,10 +7,12 @@ public class PlayerManager : MonoBehaviour {
     private Vector3 touchPosition;
 
     public GenerationEngine ge;
-
     public float speed = 5;
+    public AudioSource CoinSound;
+    public AudioSource EatSound;
 
     private Animator anim;
+    private bool dead = false;
 
 	// Use this for initialization
 	void Start () {
@@ -40,23 +42,32 @@ public class PlayerManager : MonoBehaviour {
     {
         if (collision.CompareTag("ScoreOrb"))
         {
+            EatSound.Play();
             anim.SetBool("eat", true);
             collision.gameObject.SendMessage("DeathAnimation");
             Destroy(collision.gameObject);
             ge.SpawnOrbs();
             ge.PlusScore(25);
-            anim.SetBool("eat", false);
         }
         if (collision.CompareTag("DeathOrb"))
         {
+            dead = true;
+            StartCoroutine(Death(collision));
+        }
+        
+        if (collision.CompareTag("BulletOrb"))
+        {
+            dead = true;
             StartCoroutine(Death(collision));
         }
 
         if (collision.CompareTag("BonusOrb"))
         {
+            CoinSound.Play();
             anim.SetBool("eat", true);
             DestroyObject(collision.gameObject);
             ge.PlusScore(50);
+            ge.AddCoin();
         }
 
     }
@@ -73,17 +84,20 @@ public class PlayerManager : MonoBehaviour {
 
     private void Movement()
     {
-        MoveToTouchPos(touchPosition);
-        ValidatePosition();
-        if (Input.touchCount > 0)
+        if (!dead)
         {
-            Touch touch = Input.GetTouch(0);
-
-            if (touch.phase == TouchPhase.Began)
+            MoveToTouchPos(touchPosition);
+            ValidatePosition();
+            if (Input.touchCount > 0)
             {
-                touchPosition = Camera.main.ScreenToWorldPoint(
-                    new Vector3(touch.position.x, touch.position.y, 10));
-            }
+                Touch touch = Input.GetTouch(0);
+
+                if (touch.phase == TouchPhase.Began)
+                {
+                    touchPosition = Camera.main.ScreenToWorldPoint(
+                        new Vector3(touch.position.x, touch.position.y, 10));
+                }
+            }   
         }
     }
 

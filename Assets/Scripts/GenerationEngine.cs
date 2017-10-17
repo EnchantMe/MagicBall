@@ -4,6 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using GoogleMobileAds.Api;
+using GooglePlayGames;
+using GooglePlayGames.BasicApi;
+using GooglePlayGames.Native.Cwrapper;
+using NUnit.Framework;
+using UnityEngine.SocialPlatforms;
 
 public class GenerationEngine : MonoBehaviour {
 
@@ -11,17 +17,23 @@ public class GenerationEngine : MonoBehaviour {
     public GameObject ScoreOrb;
     public GameObject DeathOrb;
     public GameObject BonusOrb;
+    public GameObject BulletOrb;
     public float spawnRate = 1;
     public Slider explosionSlider;
     public float decreaseTimeRate = 0.5f;
     public float decreaseValueRate = 0.1f;
     public TextMeshProUGUI scoreText;
+    public AudioSource ISeeYouSource;
 
     private int deathOrbSpawnRate = 1;
-    private int score = 0;
+    private int bulletOrbSpawnRate = 0;
+    [HideInInspector]
+    public int score = 0;
     private int capScore = 500;
     private bool firstCap = false;
-    private bool stopSpawn = false;
+    private bool stopSpawnDeathOrbs = false;
+    private int capScoreBullets = 1000;
+    private bool stopSpawnBulletOrbs = false;
     private List<GameObject> bonusOrbs;
     private List<GameObject> deathOrbs;
 
@@ -30,13 +42,54 @@ public class GenerationEngine : MonoBehaviour {
     [HideInInspector]
     public static float borderY = 4f;
     
+    //Achievments
+    private const string ach1 = "CgkIx5CvwKwMEAIQAA";
+    private const string ach2 = "CgkIx5CvwKwMEAIQAQ";
+    private const string ach3 = "CgkIx5CvwKwMEAIQAg";
+    private const string ach4 = "CgkIx5CvwKwMEAIQAw";
+    private const string ach5 = "CgkIx5CvwKwMEAIQBA";
+    
 	// Use this for initialization
 	void Start ()
-    {
+	{
+	    PlayGamesPlatform.Activate();
+	    Social.localUser.Authenticate((bool success) =>
+	    {
+	        if(success) print("Okay login");
+	    });
+	    
+	    Time.timeScale = 1f;
+	    var randomSound = Random.Range(1, 3);
+	    if (randomSound == 2)
+	    {
+	        ISeeYouSource.Play();
+	    }
+
+	    if (PlayerPrefs.HasKey("CoinRestart"))
+	    {
+	        if (PlayerPrefs.GetString("CoinRestart") == "true")
+	        {
+	            score = PlayerPrefs.GetInt("Score");
+	            scoreText.SetText("Score : "+ score);
+	            PlayerPrefs.SetString("CoinRestart", "false");
+	        }
+	    }
+        
+        if (PlayerPrefs.HasKey("ad"))
+        {
+            if (PlayerPrefs.GetString("ad") == "true")
+            {
+                score = PlayerPrefs.GetInt("Score");
+                scoreText.SetText("Score : "+ score);
+                PlayerPrefs.SetString("ad","used");
+            }
+        }
+        
         deathOrbs = new List<GameObject>();
         bonusOrbs = new List<GameObject>();
         SpawnOrbs();
         StartCoroutine(DecreaseSliderValue());
+        
     }
 	
 	// Update is called once per frame
@@ -48,11 +101,54 @@ public class GenerationEngine : MonoBehaviour {
         }
 	}
 
+    private void GetTheAchiv(string id)
+    {
+        Social.ReportProgress(id,100f, (bool success) =>
+        {
+            if(success) print("Okay login");
+        });
+    }
+
+    public void SpawnBulletOrb()
+    {
+        GameObject obj = Instantiate(BulletOrb) as GameObject;
+        BulletOrb valObj = obj.GetComponent<BulletOrb>();
+        
+        Vector3 spawnPosition = new Vector3(5,5,5);
+        
+        switch (Random.Range(1,5))
+        {
+            case 1:
+                spawnPosition = new Vector3(Random.Range(-2.5f,2.5f),4f,obj.transform.position.z);
+                obj.transform.SetPositionAndRotation(spawnPosition, Quaternion.Euler(0,0,-90));
+                valObj.state = global::BulletOrb.StatesOfMovement.Down;
+                break;
+            case 2:
+                spawnPosition = new Vector3(Random.Range(-2.5f,2.5f),-4f,obj.transform.position.z);
+                obj.transform.SetPositionAndRotation(spawnPosition, Quaternion.Euler(0,0,90));
+                valObj.state = global::BulletOrb.StatesOfMovement.Up;
+                break;
+            case 3:
+                spawnPosition = new Vector3(2.5f,Random.Range(-4f,4f),obj.transform.position.z);
+                obj.GetComponent<SpriteRenderer>().flipY = true;
+                obj.transform.SetPositionAndRotation(spawnPosition, Quaternion.Euler(0,0,-180));
+                valObj.state = global::BulletOrb.StatesOfMovement.Left;
+                break;
+            case 4:
+                spawnPosition = new Vector3(-2.5f,Random.Range(-4f,4f),obj.transform.position.z);
+                obj.transform.position = spawnPosition;
+                valObj.state = global::BulletOrb.StatesOfMovement.Right;
+                break;	      
+        }     
+        
+    }
+
     public void SpawnOrbs()
     {
        
         ClearOrbs();
         ValidateSpawnRateOfDeathOrbs();
+        ValidateSpawnRateOfBulletOrbs();
         explosionSlider.value += 0.5f;
 
         deathOrbs.Clear();
@@ -63,6 +159,11 @@ public class GenerationEngine : MonoBehaviour {
             float deathY = Random.Range(-borderY, borderY);
             ValidateDeathOrbPosition(ref deathX, ref deathY);
             deathOrbs.Add(Instantiate(DeathOrb, new Vector3(deathX, deathY, 0), DeathOrb.transform.rotation));
+        }
+
+        for (int i = 0; i < bulletOrbSpawnRate; ++i)
+        {
+            SpawnBulletOrb();   
         }
 
         float scoreX = Random.Range(-borderX, borderX);
@@ -76,10 +177,30 @@ public class GenerationEngine : MonoBehaviour {
         bonusOrbs.Add(Instantiate(BonusOrb, new Vector3(bonusX, bonusY, 0), BonusOrb.transform.rotation));
 
     }
+
+    private void ValidateSpawnRateOfBulletOrbs()
+    {
+        if (!stopSpawnBulletOrbs)
+        {
+            if (score >= capScoreBullets)
+            {
+                ++bulletOrbSpawnRate;
+                capScoreBullets += 1500;
+            }
+            if (capScoreBullets == 4000)
+            {
+                capScoreBullets += 1000;
+            }
+            if (capScoreBullets >= 6500 && !stopSpawnBulletOrbs)
+            {
+                stopSpawnBulletOrbs = true;
+            }
+        }
+    }
     
     private void ValidateSpawnRateOfDeathOrbs()
     {
-        if (!stopSpawn)
+        if (!stopSpawnDeathOrbs)
         {
             if (score >= capScore && !firstCap)
             {
@@ -94,8 +215,12 @@ public class GenerationEngine : MonoBehaviour {
             }
             if (deathOrbSpawnRate == 4)
             {
-                stopSpawn = true;
+                stopSpawnDeathOrbs = true;
             }
+        }
+        if (score > 7250)
+        {
+            ++deathOrbSpawnRate;
         }
     }
 
@@ -265,13 +390,47 @@ public class GenerationEngine : MonoBehaviour {
     public void PlusScore(int sc)
     {
         score += sc;
+        if (score >= 6000)
+        {
+            GetTheAchiv(ach3);
+        }
+        if (score >= 1000)
+        {
+            GetTheAchiv(ach4);
+        }
         scoreText.SetText("Score : "+ score);
     }
 
     public void Death()
     {
+        if (PlayerPrefs.HasKey("CountDeath"))
+        {
+            var countDeaths = PlayerPrefs.GetInt("CountDeath");
+            ++countDeaths;
+            if (countDeaths >= 500)
+            {
+                GetTheAchiv(ach1);
+            }
+        }
+        else
+        {
+            PlayerPrefs.SetInt("CountDeath",1);
+            GetTheAchiv(ach5);
+        }
+        
         PlayerPrefs.SetInt("Score", score);
         SceneManager.LoadScene("DeathScene");
+    }
+
+    public void AddCoin()
+    {
+      var coins = PlayerPrefs.GetInt("Coins");
+        ++coins;
+        if (coins >= 100)
+        {
+            GetTheAchiv(ach2);
+        }
+        PlayerPrefs.SetInt("Coins", coins);
     }
 
     public void ClearOrbs()

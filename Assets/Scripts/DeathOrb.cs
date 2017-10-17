@@ -9,6 +9,7 @@ public class DeathOrb : MonoBehaviour {
     private int randomMovement;
 
     private Animator anim;
+    private bool dead = false;
 
     void Start()
     {
@@ -19,40 +20,46 @@ public class DeathOrb : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if(randomMovement == 1)
+        if (!dead)
         {
-            anim.SetBool("flip", true);
-        }
-        else if(randomMovement == 2)
-        {
-            anim.SetBool("flip", false);
-        }
+            if(randomMovement == 1)
+            {
+                anim.SetBool("flip", true);
+            }
+            else if(randomMovement == 2)
+            {
+                anim.SetBool("flip", false);
+            }
 
-        float step = speed * Time.deltaTime;
+            float step = speed * Time.deltaTime;
 
-        if(transform.position.x == GenerationEngine.borderX)
-        {
-            randomMovement = 2;
-        }
+            if(transform.position.x == GenerationEngine.borderX)
+            {
+                randomMovement = 2;
+            }
 
-        if (transform.position.x == -GenerationEngine.borderX)
-        {
-            randomMovement = 1;
-        }
+            if (transform.position.x == -GenerationEngine.borderX)
+            {
+                randomMovement = 1;
+            }
 
-        if (randomMovement == 1)
-        {
-          transform.position = Vector3.MoveTowards(transform.position, new Vector3(GenerationEngine.borderX, transform.position.y, transform.position.z), step);
+            if (randomMovement == 1)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, new Vector3(GenerationEngine.borderX, transform.position.y, transform.position.z), step);
+            }
+            else if (randomMovement == 2)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, new Vector3(-GenerationEngine.borderX, transform.position.y, transform.position.z), step);
+            }
+  
         }
-        else if (randomMovement == 2)
-        {
-          transform.position = Vector3.MoveTowards(transform.position, new Vector3(-GenerationEngine.borderX, transform.position.y, transform.position.z), step);
-        }
-
+   
     }
-
+    
+    
     public void AttackAnimation()
     {
+        dead = true;
         anim.SetBool("attack", true);
     }
 }
